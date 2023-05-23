@@ -5,6 +5,7 @@ import { useModal, type RenderModalProps } from "./Modal";
 interface TriggerModalProps extends RenderModalProps {
   onOk?: () => void;
   children: RenderFn<[OpenModal: VoidFn]>;
+  className?: string;
 }
 
 const TriggerModal = ({

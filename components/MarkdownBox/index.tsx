@@ -18,6 +18,7 @@ const MarkdownBox: React.FC<{ children?: string }> = ({ children }) => {
           },
         ],
       ]}
+      className="wmde-markdown wmde-markdown-color"
       components={{
         //   pre: PreCode,
         a: (aProps) => {

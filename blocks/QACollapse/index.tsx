@@ -114,6 +114,7 @@ const QACollapse = memo(() => {
                         value={editingValue}
                       />
                     }
+                    className="w-[75vw]"
                     onOk={() => {
                       updateQA(panel.id, editingValue);
                       setEditing("");

@@ -2,11 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 @tailwind variants;
+@import "@uiw/react-markdown-preview/markdown.css";
+@import "@uiw/react-md-editor/markdown-editor.css";
 
 :root {
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
+  --base-border-color: #0f172a1a;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -14,7 +17,24 @@
     --foreground-rgb: 255, 255, 255;
     --background-start-rgb: 0, 0, 0;
     --background-end-rgb: 0, 0, 0;
+    --base-border-color: #fff;
   }
+}
+[data-color-mode="dark"] {
+  /* :root { */
+  --foreground-rgb: 255, 255, 255;
+  --background-start-rgb: 0, 0, 0;
+  --background-end-rgb: 0, 0, 0;
+  --base-border-color: #fff;
+  /* } */
+}
+[data-color-mode="light"] {
+  /* :root { */
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+  --base-border-color: #0f172a1a;
+  /* } */
 }
 
 body {
@@ -25,4 +45,24 @@ body {
       rgb(var(--background-end-rgb))
     )
     rgb(var(--background-start-rgb));
+}
+
+*,
+::before,
+::after {
+  border-color: var(--base-border-color);
+}
+
+body .w-md-editor {
+  background-color: transparent;
+  /* color: transparent; */
+}
+
+body .w-md-editor-toolbar {
+  background-color: transparent;
+  /* color: transparent; */
+}
+body .wmde-markdown {
+  background-color: transparent;
+  /* color: transparent; */
 }

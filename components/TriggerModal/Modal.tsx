@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { isFn } from "@/utils/predicates";
+import clsx from "clsx";
 import { SolidButton } from "@/components/Buttons";
 
 type FooterRenderArgs = [closeModal: VoidFn];
@@ -20,6 +21,8 @@ export interface RenderModalProps {
 interface ModalProps extends RenderModalProps {
   isOpen: boolean;
   closeModal: (isOk?: boolean) => void;
+  className?: string;
+  containerClassName?: string;
 }
 
 const Modal = ({
@@ -28,20 +31,38 @@ const Modal = ({
   isOpen,
   footer,
   closeModal,
+  className: propsPanelCls,
+  containerClassName: containerCls,
 }: ModalProps) => {
+  const containerClsName = clsx(
+    "flex",
+    "min-h-full",
+    "items-center",
+    "justify-center",
+    "p-4",
+    "text-center",
+    "dark:text-white",
+    containerCls
+  );
+
+  const panelCls = clsx(
+    "w-full transform overflow-hidden rounded-2xl bg-white dark:bg-slate-800 p-6 pb-20 text-left align-middle shadow-xl transition-all",
+    propsPanelCls
+  );
+
   const okButton = (
     <button
       type="button"
       className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
       onClick={() => closeModal(true)}
     >
-      Got it
+      Ok
     </button>
   );
 
   const cancelButton = (
-    <SolidButton type="button" className="mr-2" onClick={() => closeModal()}>
-      cancel
+    <SolidButton className="mr-4" onClick={() => closeModal()}>
+      Cancel
     </SolidButton>
   );
 
@@ -68,7 +89,7 @@ const Modal = ({
         </Transition.Child>
 
         <div className="fixed inset-0 overflow-y-auto">
-          <div className="flex min-h-full items-center justify-center p-4 text-center">
+          <div className={containerClsName}>
             <Transition.Child
               as={React.Fragment}
               enter="ease-out duration-300"
@@ -78,17 +99,17 @@ const Modal = ({
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 pb-16 text-left align-middle shadow-xl transition-all">
+              <Dialog.Panel className={panelCls}>
                 <Dialog.Title
                   as="h3"
-                  className="text-lg font-medium leading-6 text-gray-900"
+                  className="text-lg text-gray-900 dark:text-white font-medium leading-6 "
                 >
                   {title}
                 </Dialog.Title>
 
-                <div className="mt-2">{content}</div>
+                <div className="mt-4">{content}</div>
 
-                <div className="mt-4 absolute bottom-4 right-4">
+                <div className="text-gray-900 dark:text-white mt-4 absolute bottom-5 right-6">
                   {isFn<FooterRenderArgs, React.ReactNode>(footer)
                     ? footer(closeModal)
                     : defaultFooter}
@@ -104,6 +125,7 @@ const Modal = ({
 
 export interface UseModalProps extends RenderModalProps, ModalActionProps {
   trigger: React.ReactElement;
+  className?: string;
 }
 
 export const useModal = ({
@@ -114,6 +136,7 @@ export const useModal = ({
   isOpen,
   openModal,
   closeModal,
+  className,
 }: UseModalProps) => {
   const elm = (
     <>
@@ -124,6 +147,7 @@ export const useModal = ({
         title={title}
         content={content}
         footer={footer}
+        className={className}
       />
     </>
   );

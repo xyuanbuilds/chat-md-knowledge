@@ -1,10 +1,12 @@
 import {} from "react";
 import clsx from "clsx";
-import "@uiw/react-md-editor/markdown-editor.css";
-import "@uiw/react-markdown-preview/markdown.css";
+// import "@uiw/react-md-editor/markdown-editor.css";
+// import "@uiw/react-markdown-preview/markdown.css";
 import dynamic from "next/dynamic";
 import { useControlled } from "@/hooks";
+import { useWindowSize } from "react-use";
 
+// TODO suspend
 const MDEditor = dynamic(
   () => import("@uiw/react-md-editor").then((mod) => mod.default),
   { ssr: false }
@@ -35,13 +37,18 @@ const Editor = ({ defaultValue, value, onChange }: EditorProps) => {
     onChange,
   });
 
+  const { height } = useWindowSize();
+
   return (
-    <div className="container">
+    <div>
       <MDEditor
+        height={height * 0.75}
+        maxHeight={height - 150}
         value={controlledValue}
         onChange={(e) => {
           setValue(e ?? "");
         }}
+        hideToolbar
       />
       {/* <MarkdownPreview
         source={controlledValue}

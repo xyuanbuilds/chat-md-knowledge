@@ -16,10 +16,10 @@ export default function Home() {
   // console.log("home", apiKey, props);
   return (
     <div
-      className={`relative container h-screen border border-solid border-white rounded ${inter.className}`}
+      className={`relative container h-screen border border-solid dark:border-white rounded ${inter.className}`}
     >
       <ActivityBar
-        className={`absolute w-12 border-r border-white border-solid`}
+        className={`absolute w-12 border-r dark:border-white border-solid`}
       />
       <main
         className={`${flexDefault} overflow-hidden h-full ml-12 w-[calc(100%-2.5rem)] xl:w-[calc(100%-2.5rem)] md:w-[calc(100%-2rem)]`}
@@ -28,9 +28,9 @@ export default function Home() {
           <div className="flex-1 overflow-x-hidden overflow-y-auto">
             <QACollapse />
           </div>
-          <QuestionBox className="border bg-white border-white rounded mt-4 min-h-[1rem] max-h-[30%] flex-initial" />
+          <QuestionBox className="border bg-gray-300 dark:bg-white dark:border-white rounded mt-4 min-h-[1rem] max-h-[30%] flex-initial" />
         </div>
-        <SideBar className="border-l border-white" />
+        <SideBar className="border-l dark:border-white" />
       </main>
     </div>
   );
