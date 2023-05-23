@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { isFn } from "@/utils/predicates";
+import { SolidButton } from "@/components/Buttons";
 
 type FooterRenderArgs = [closeModal: VoidFn];
 
@@ -18,7 +19,7 @@ export interface RenderModalProps {
 
 interface ModalProps extends RenderModalProps {
   isOpen: boolean;
-  closeModal: VoidFn;
+  closeModal: (isOk?: boolean) => void;
 }
 
 const Modal = ({
@@ -39,19 +40,15 @@ const Modal = ({
   );
 
   const cancelButton = (
-    <button
-      type="button"
-      className="inline-flex justify-center rounded-md border border-transparent px-4 py-2 text-sm font-medium  focus:outline-none"
-      onClick={() => closeModal()}
-    >
+    <SolidButton type="button" className="mr-2" onClick={() => closeModal()}>
       cancel
-    </button>
+    </SolidButton>
   );
 
   const defaultFooter = (
     <>
-      {okButton}
       {cancelButton}
+      {okButton}
     </>
   );
 
@@ -81,7 +78,7 @@ const Modal = ({
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+              <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 pb-16 text-left align-middle shadow-xl transition-all">
                 <Dialog.Title
                   as="h3"
                   className="text-lg font-medium leading-6 text-gray-900"
@@ -91,7 +88,7 @@ const Modal = ({
 
                 <div className="mt-2">{content}</div>
 
-                <div className="mt-4">
+                <div className="mt-4 absolute bottom-4 right-4">
                   {isFn<FooterRenderArgs, React.ReactNode>(footer)
                     ? footer(closeModal)
                     : defaultFooter}
