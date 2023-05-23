@@ -38,7 +38,10 @@ export const GPTIcon = () => (
   </svg>
 );
 
-export const EditIcon = ({ className }: IconBaseProps) => (
+export const EditIcon = ({
+  className,
+  ...rest
+}: IconBaseProps & React.SVGProps<SVGSVGElement>) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     fill="none"
@@ -46,6 +49,7 @@ export const EditIcon = ({ className }: IconBaseProps) => (
     strokeWidth={1.5}
     stroke="currentColor"
     className={clsx(iconBaseCls, className)}
+    {...rest}
   >
     <path
       strokeLinecap="round"

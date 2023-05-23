@@ -16,8 +16,8 @@ WORKDIR /app
 COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* ./
 
 # RUN curl -f https://get.pnpm.io/v6.16.js | node - add --global pnpm
-RUN npm i -g pnpm@^7.x
-RUN pnpm install --frozen-lockfile --prod
+RUN npm i -g pnpm
+RUN pnpm install
 #  if [ -f yarn.lock ]; then yarn --frozen-lockfile; \
 #  elif [ -f package-lock.json ]; then npm ci; \
 #  elif [ -f pnpm-lock.yaml ]; then yarn global add pnpm && pnpm i --frozen-lockfile; \

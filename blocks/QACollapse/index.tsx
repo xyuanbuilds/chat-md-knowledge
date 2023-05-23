@@ -1,8 +1,10 @@
-import React, { memo } from "react";
+import React, { memo, useState } from "react";
 import { Disclosure, Transition } from "@headlessui/react";
 import { useAtom } from "jotai";
 import { qaStore } from "@/stores/qa";
 import MarkdownBox from "@/components/MarkdownBox";
+import TriggerModal from "@/components/TriggerModal";
+import MarkdownEditor from "@/components/MarkdownEditor/Editor";
 import { UserIcon, GPTIcon, EditIcon } from "./icons";
 import { useSize } from "react-use";
 import { useSpring, animated } from "@react-spring/web";
@@ -49,39 +51,90 @@ const SizedPanel: React.FC<{
 };
 
 const QACollapse = memo(() => {
-  const [{ qa }] = useAtom(qaStore);
+  const [{ qa }, setAtom] = useAtom(qaStore);
+
+  const [editingValue, setEditing] = useState("");
+
+  const updateQA = (curId: number, mdStr?: string) => {
+    if (!curId) return;
+    setAtom((prev) => {
+      const { qa } = prev;
+
+      return {
+        ...prev,
+        qa: qa.map((i) => {
+          if (i.id === curId) {
+            return {
+              ...i,
+              mdStr,
+            };
+          }
+          return i;
+        }),
+      };
+    });
+  };
 
   return (
     <div className="flex flex-col items-start gap-1">
-      {qa.map((panel) => (
-        <Disclosure
-          className="w-full p-1 rounded border border-dashed border-transparent hover:border-gray-500"
-          as="div"
-          defaultOpen
-          key={panel.chunks?.[0]?.id || panel.id}
-        >
-          {({ open }) => {
-            const mdStr =
-              panel.chunks?.reduce((res, i) => {
-                const content = i.choices[0].delta.content;
+      {qa.map((panel) => {
+        return (
+          <Disclosure
+            className="w-full p-1 rounded border border-dashed border-transparent hover:border-gray-500"
+            as="div"
+            defaultOpen
+            key={panel.chunks?.[0]?.id || panel.id}
+          >
+            {({ open }) => {
+              const mdStr =
+                (panel.mdStr ||
+                  panel.chunks?.reduce((res, i) => {
+                    const content = i.choices[0].delta.content;
 
-                if (!content) return res;
+                    if (!content) return res;
 
-                return `${res}${content}`;
-              }, "") ?? "";
+                    return `${res}${content}`;
+                  }, "")) ??
+                "";
 
-            return (
-              <div className="relative">
-                <Disclosure.Button className="w-full text-left text-gray-500">
-                  <UserIcon /> : {panel.question}
-                </Disclosure.Button>
-                <SizedPanel open={open}>{mdStr}</SizedPanel>
-                <EditIcon className={`absolute cursor-pointer top-1 right-1`} />
-              </div>
-            );
-          }}
-        </Disclosure>
-      ))}
+              return (
+                <div className="relative">
+                  <Disclosure.Button className="w-full text-left text-gray-500">
+                    <UserIcon /> : {panel.question}
+                  </Disclosure.Button>
+                  <SizedPanel open={open}>{mdStr}</SizedPanel>
+
+                  <TriggerModal
+                    content={
+                      <MarkdownEditor
+                        onChange={(v) => {
+                          console.log("onchange", v);
+                          setEditing(v);
+                        }}
+                        value={editingValue}
+                      />
+                    }
+                    onOk={() => {
+                      updateQA(panel.id, editingValue);
+                      setEditing("");
+                    }}
+                  >
+                    {(open) => (
+                      <EditIcon
+                        onClick={() => {
+                          setEditing(mdStr);
+                          open();
+                        }}
+                        className={`absolute cursor-pointer top-1 right-1`}
+                      />
+                    )}
+                  </TriggerModal>
+                </div>
+              );
+            }}
+          </Disclosure>
+        );
+      })}
     </div>
   );
 });

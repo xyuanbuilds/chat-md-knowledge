@@ -27,6 +27,8 @@ interface QA {
     created: number;
     finish_reason: "stop" | null;
   }[];
+  /** 编辑后产生的 md 字符串 */
+  mdStr?: string;
   status?: QUESTION_STATUS;
 }
 

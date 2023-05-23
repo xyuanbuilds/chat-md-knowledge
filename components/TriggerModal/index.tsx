@@ -1,14 +1,23 @@
+import { useEvent } from "@/hooks";
 import * as React from "react";
 import { useModal, type RenderModalProps } from "./Modal";
 
 interface TriggerModalProps extends RenderModalProps {
+  onOk?: () => void;
   children: RenderFn<[OpenModal: VoidFn]>;
 }
 
-const TriggerModal = ({ children }: TriggerModalProps) => {
+const TriggerModal = ({
+  children,
+  onOk,
+  ...renderReset
+}: TriggerModalProps) => {
   let [isOpen, setIsOpen] = React.useState(false);
 
-  const closeModal = React.useCallback(() => setIsOpen(false), []);
+  const closeModal = useEvent((isOk?: boolean) => {
+    setIsOpen(false);
+    if (isOk) onOk?.();
+  });
   const openModal = React.useCallback(() => setIsOpen(true), []);
 
   const trigger = children(openModal);
@@ -18,6 +27,7 @@ const TriggerModal = ({ children }: TriggerModalProps) => {
     isOpen,
     openModal,
     closeModal,
+    ...renderReset,
   });
 
   return <>{modalElm}</>;
