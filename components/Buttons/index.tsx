@@ -28,15 +28,16 @@ const cls = {
     "hover:border-[#4096ff]",
   ]),
 };
+// border border-transparent
 
 type ButtonProps = React.DetailedHTMLProps<
   React.ButtonHTMLAttributes<HTMLButtonElement>,
   HTMLButtonElement
 >;
 
-export const Button = (
-  <button type="button" className="">
-    Got it
+export const Button = ({ children, className, ...rest }: ButtonProps) => (
+  <button type="button" className={clsx(cls.default, className)} {...rest}>
+    {children}
   </button>
 );
 

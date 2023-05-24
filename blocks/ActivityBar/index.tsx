@@ -1,6 +1,7 @@
 import * as React from "react";
 import TriggerModal from "@/components/TriggerModal";
 import cls from "clsx";
+import DarkToggle from "@/components/DarkToggle";
 
 const Setting = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
@@ -10,7 +11,7 @@ const Setting = (props: React.SVGProps<SVGSVGElement>) => (
     strokeWidth={1.5}
     stroke="currentColor"
     {...props}
-    className={cls("w-6 h-6", props.className)}
+    className={cls("w-[1.35rem] h-[1.35rem]", props.className)}
   >
     <path
       strokeLinecap="round"
@@ -28,8 +29,12 @@ const Setting = (props: React.SVGProps<SVGSVGElement>) => (
 const ActivityBar = ({ className }: { className?: string }) => {
   return (
     <div
-      className={cls("h-full p-4 flex-col justify-end items-center", className)}
+      className={cls(
+        "h-full p-4 flex gap-2 flex-col justify-end items-center",
+        className
+      )}
     >
+      <DarkToggle />
       <TriggerModal content={"modal content"}>
         {(open) => <Setting className={"cursor-pointer"} onClick={open} />}
       </TriggerModal>

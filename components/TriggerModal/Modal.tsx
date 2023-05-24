@@ -46,7 +46,7 @@ const Modal = ({
   );
 
   const panelCls = clsx(
-    "w-full transform overflow-hidden rounded-2xl bg-white dark:bg-slate-800 p-6 pb-20 text-left align-middle shadow-xl transition-all",
+    "w-full transform overflow-hidden rounded-2xl bg-white dark:bg-gray-900 p-6 pb-20 text-left align-middle shadow-xl transition-all",
     propsPanelCls
   );
 

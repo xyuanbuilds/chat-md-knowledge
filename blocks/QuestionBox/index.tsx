@@ -75,8 +75,7 @@ const QuestionBox = ({ className }: { className?: string }) => {
           }
         }}
         onChange={(e) => setQues(e.target.value)}
-        className="outline-none h-full w-full min-h-[1.3rem]"
-        style={{ color: "red" }}
+        className="outline-none text-[#334155] h-full w-full min-h-[1.3rem]"
       />
     </div>
   );

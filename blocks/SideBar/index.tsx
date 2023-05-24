@@ -1,4 +1,5 @@
 import * as React from "react";
+import { Button } from "@/components/Buttons";
 import cls from "clsx";
 
 const DownloadIcon = () => (
@@ -23,10 +24,10 @@ const SideBar = ({ className }: { className?: string }) => {
     <div className={cls("w-1/5 h=full relative", className)}>
       side bar
       {/* <div className="absolute bottom-4 left-[calc(50%-25%);] w-1/2 h-0 pb-[30.9%]"> */}
-      <button className="absolute left-1/2 -translate-x-1/2 bottom-6 rounded-md px-4 flex h-9 items-center text-sm font-medium transition-colors duration-200 leading-none bg-gray-800 text-gray-0 border border-black hover:bg-inherit hover:text:white hover:border-white">
+      <Button className="absolute left-1/2 -translate-x-1/2 bottom-6 bg-blue-100 hover:bg-blue-200">
         <DownloadIcon />
         Download
-      </button>
+      </Button>
       {/* </div> */}
     </div>
   );
