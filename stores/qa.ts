@@ -1,6 +1,6 @@
 import { atom } from "jotai";
 
-enum QUESTION_STATUS {
+export enum QUESTION_STATUS {
   PENDING,
   STREAMING,
   DONE,

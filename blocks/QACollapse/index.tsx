@@ -1,5 +1,5 @@
-import React, { memo, useState } from "react";
-import { Disclosure, Transition } from "@headlessui/react";
+import React, { memo, useRef, useState, useEffect } from "react";
+import { Disclosure } from "@headlessui/react";
 import { useAtom } from "jotai";
 import { qaStore } from "@/stores/qa";
 import MarkdownBox from "@/components/MarkdownBox";
@@ -53,6 +53,38 @@ const SizedPanel: React.FC<{
 const QACollapse = memo(() => {
   const [{ qa }, setAtom] = useAtom(qaStore);
 
+  const container = useRef<HTMLDivElement>(null);
+  const content = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const element = content.current;
+
+    if (!element) return;
+
+    const handleHeightChange = () => {
+      const newHeight = element.clientHeight;
+      console.log("height changed:", newHeight, container.current?.scrollTop);
+      if (container.current && newHeight > container.current?.scrollTop) {
+        container.current.scrollTo({
+          top: newHeight,
+          // behavior: "smooth",
+        });
+      }
+      // 处理高度变化的操作
+    };
+
+    const observer = new MutationObserver(handleHeightChange);
+    observer.observe(element, {
+      attributes: true,
+      childList: true,
+      subtree: true,
+    });
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [content]);
+
   const [editingValue, setEditing] = useState("");
 
   const updateQA = (curId: number, mdStr?: string) => {
@@ -76,66 +108,68 @@ const QACollapse = memo(() => {
   };
 
   return (
-    <div className="flex flex-col items-start gap-1">
-      {qa.map((panel) => {
-        return (
-          <Disclosure
-            className="w-full p-1 rounded border border-dashed border-transparent hover:border-gray-500"
-            as="div"
-            defaultOpen
-            key={panel.chunks?.[0]?.id || panel.id}
-          >
-            {({ open }) => {
-              const mdStr =
-                (panel.mdStr ||
-                  panel.chunks?.reduce((res, i) => {
-                    const content = i.choices[0].delta.content;
+    <div ref={container} className="flex-1 overflow-x-hidden overflow-y-auto">
+      <div ref={content} className="flex flex-col items-start gap-1">
+        {qa.map((panel) => {
+          return (
+            <Disclosure
+              className="w-full p-1 rounded border border-dashed border-transparent hover:border-gray-500"
+              as="div"
+              defaultOpen
+              key={panel.chunks?.[0]?.id || panel.id}
+            >
+              {({ open }) => {
+                const mdStr =
+                  (panel.mdStr ||
+                    panel.chunks?.reduce((res, i) => {
+                      const content = i.choices[0].delta.content;
 
-                    if (!content) return res;
+                      if (!content) return res;
 
-                    return `${res}${content}`;
-                  }, "")) ??
-                "";
+                      return `${res}${content}`;
+                    }, "")) ??
+                  "";
 
-              return (
-                <div className="relative">
-                  <Disclosure.Button className="w-full text-left text-gray-500">
-                    <UserIcon /> : {panel.question}
-                  </Disclosure.Button>
-                  <SizedPanel open={open}>{mdStr}</SizedPanel>
+                return (
+                  <div className="relative">
+                    <Disclosure.Button className="w-full text-left text-gray-500">
+                      <UserIcon /> : {panel.question}
+                    </Disclosure.Button>
+                    <SizedPanel open={open}>{mdStr}</SizedPanel>
 
-                  <TriggerModal
-                    content={
-                      <MarkdownEditor
-                        onChange={(v) => {
-                          console.log("onchange", v);
-                          setEditing(v);
-                        }}
-                        value={editingValue}
-                      />
-                    }
-                    className="w-[75vw]"
-                    onOk={() => {
-                      updateQA(panel.id, editingValue);
-                      setEditing("");
-                    }}
-                  >
-                    {(open) => (
-                      <EditIcon
-                        onClick={() => {
-                          setEditing(mdStr);
-                          open();
-                        }}
-                        className={`absolute cursor-pointer top-1 right-1`}
-                      />
-                    )}
-                  </TriggerModal>
-                </div>
-              );
-            }}
-          </Disclosure>
-        );
-      })}
+                    <TriggerModal
+                      content={
+                        <MarkdownEditor
+                          onChange={(v) => {
+                            console.log("onchange", v);
+                            setEditing(v);
+                          }}
+                          value={editingValue}
+                        />
+                      }
+                      className="w-[75vw]"
+                      onOk={() => {
+                        updateQA(panel.id, editingValue);
+                        setEditing("");
+                      }}
+                    >
+                      {(open) => (
+                        <EditIcon
+                          onClick={() => {
+                            setEditing(mdStr);
+                            open();
+                          }}
+                          className={`absolute cursor-pointer top-1 right-1`}
+                        />
+                      )}
+                    </TriggerModal>
+                  </div>
+                );
+              }}
+            </Disclosure>
+          );
+        })}
+      </div>
     </div>
   );
 });

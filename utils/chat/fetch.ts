@@ -53,8 +53,16 @@ const chatFetch = async (
   onData = (chunks: any[]) => {
     console.log("dataChunks", chunks);
   },
-  openaiKey: string
+  openaiKey: string,
+  options: {
+    onStart?: VoidFn;
+    onSteaming?: VoidFn;
+    onDone?: (res: string) => void;
+    onFinally?: VoidFn;
+    onError?: (err: Error) => void;
+  } = {}
 ) => {
+  options.onStart?.();
   return fetch(API_URL, {
     method: "POST",
     headers: {
@@ -69,6 +77,7 @@ const chatFetch = async (
       const reader = rb.getReader();
       return new ReadableStream({
         start: (controller) => {
+          options.onSteaming?.();
           const push = () => {
             reader.read().then(({ done, value }) => {
               if (done) {
@@ -84,12 +93,20 @@ const chatFetch = async (
         },
       });
     })
-    .then((stream) =>
-      new Response(stream, { headers: { "Content-Type": "text/html" } }).text()
-    )
+    .then((stream) => {
+      return new Response(stream, {
+        headers: { "Content-Type": "text/html" },
+      }).text();
+    })
     .then((res) => {
-      console.log("response", res);
+      options.onDone?.(res);
       return res;
+    })
+    .catch((err) => {
+      options.onError?.(err);
+    })
+    .finally(() => {
+      options.onFinally?.();
     });
 };
 

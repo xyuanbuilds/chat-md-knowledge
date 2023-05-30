@@ -3,19 +3,20 @@ import chatFetch from "@/utils/chat/fetch";
 import { useState } from "react";
 import { useAtom } from "jotai";
 import { qaStore } from "@/stores/qa";
+import { CHAT_STATUS, chatStatusStore } from "@/stores/status";
 import { openaiStore } from "@/stores/openai";
 
 const QuestionBox = ({ className }: { className?: string }) => {
   const [question, setQues] = useState("");
   const [{ apiKey }] = useAtom(openaiStore);
-  const [qa, setAtom] = useAtom(qaStore);
+  const [_, setAtom] = useAtom(qaStore);
+  const [__, setChatStatus] = useAtom(chatStatusStore);
 
   const addQA = (id: number) => {
     setAtom((prev) => {
       const { qa } = prev;
 
       return {
-        ...prev,
         qa: qa.concat([
           {
             id,
@@ -30,7 +31,6 @@ const QuestionBox = ({ className }: { className?: string }) => {
       const { qa } = prev;
 
       return {
-        ...prev,
         qa: qa.map((i) => {
           if (i.id === curId) {
             const preChunks = i.chunks ?? [];
@@ -53,7 +53,14 @@ const QuestionBox = ({ className }: { className?: string }) => {
         console.log("get chunks", chunks);
         updateQA(curId, chunks);
       },
-      apiKey
+      apiKey,
+      {
+        onStart: () => setChatStatus(CHAT_STATUS.pending),
+        onSteaming: () => setChatStatus(CHAT_STATUS.streaming),
+        onDone: () => setChatStatus(CHAT_STATUS.done),
+        onError: (error) => window.alert(error),
+        onFinally: () => setChatStatus(CHAT_STATUS.original),
+      }
     );
   };
 
