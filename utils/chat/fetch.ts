@@ -9,25 +9,11 @@ const paramsBase = {
 
 const API_URL = "https://api.openai.com/v1/chat/completions";
 
-const reqParams = (content: string) => ({
+const reqParams = (content: string, stream: boolean = true) => ({
   ...paramsBase,
   messages: [{ role: "user", content }],
-  stream: true,
+  stream,
 });
-
-// interface Options {
-//     openaiKey: string;
-// }
-
-// const reqOptions = ({
-//     openaiKey
-// }: Options) => ({
-//     headers: {
-//       "Content-Type": "application/json",
-//       Authorization: `Bearer ${openaiKey}`,
-//     },
-//     responseType: "stream",
-//   });
 
 const D = new TextDecoder();
 
@@ -100,6 +86,69 @@ const chatFetch = async (
     })
     .then((res) => {
       options.onDone?.(res);
+      return res;
+    })
+    .catch((err) => {
+      options.onError?.(err);
+    })
+    .finally(() => {
+      options.onFinally?.();
+    });
+};
+
+export interface KeyWordsRes {
+  id: string;
+  object: string;
+  created: number;
+  model: string;
+  usage: Usage;
+  choices: Choice[];
+}
+
+export interface Usage {
+  prompt_tokens: number;
+  completion_tokens: number;
+  total_tokens: number;
+}
+
+export interface Choice {
+  message: Message;
+  finish_reason: string;
+  index: number;
+}
+
+export interface Message {
+  role: string;
+  content: string;
+}
+
+export const chatKeywordsFetch = async (
+  message = "make a joke in ten word",
+  openaiKey: string,
+  options: {
+    onStart?: VoidFn;
+    onFinally?: VoidFn;
+    onError?: (err: Error) => void;
+    onDone?: (res: KeyWordsRes) => void;
+  } = {}
+) => {
+  options.onStart?.();
+  return fetch(API_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${openaiKey}`,
+    },
+    body: JSON.stringify(reqParams(message, false)),
+  })
+    .then((response) => response.body)
+    .then((stream) => {
+      return new Response(stream, {
+        headers: { "Content-Type": "text/html" },
+      }).text();
+    })
+    .then((res) => {
+      options.onDone?.(JSON.parse(res) as KeyWordsRes);
       return res;
     })
     .catch((err) => {

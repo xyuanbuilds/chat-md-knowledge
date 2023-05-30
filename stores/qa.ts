@@ -8,7 +8,7 @@ export enum QUESTION_STATUS {
 }
 
 type Delta = { role?: "assistant" } | { content?: string };
-interface QA {
+export interface QA {
   question: string;
   id: number;
   chunks?: {
@@ -29,7 +29,9 @@ interface QA {
   }[];
   /** 编辑后产生的 md 字符串 */
   mdStr?: string;
+  // TODO
   status?: QUESTION_STATUS;
+  tags?: string[];
 }
 
 export const qaStore = atom<{
@@ -37,3 +39,4 @@ export const qaStore = atom<{
 }>({
   qa: [],
 });
+export const selectedAaStore = atom<number | null>(null);

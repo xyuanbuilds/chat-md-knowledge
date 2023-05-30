@@ -1,16 +1,18 @@
 import cls from "clsx";
 import chatFetch from "@/utils/chat/fetch";
 import { useState } from "react";
+import { Textarea } from "@nextui-org/react";
 import { useAtom } from "jotai";
 import { qaStore } from "@/stores/qa";
-import { CHAT_STATUS, chatStatusStore } from "@/stores/status";
+import { CHAT_STATUS, chatStatusStore, cannotChat } from "@/stores/status";
 import { openaiStore } from "@/stores/openai";
+import { useEvent } from "@/hooks";
 
 const QuestionBox = ({ className }: { className?: string }) => {
   const [question, setQues] = useState("");
   const [{ apiKey }] = useAtom(openaiStore);
   const [_, setAtom] = useAtom(qaStore);
-  const [__, setChatStatus] = useAtom(chatStatusStore);
+  const [chatStatus, setChatStatus] = useAtom(chatStatusStore);
 
   const addQA = (id: number) => {
     setAtom((prev) => {
@@ -64,15 +66,19 @@ const QuestionBox = ({ className }: { className?: string }) => {
     );
   };
 
+  const textOnChange = useEvent((e: { target: { value: string } }) => {
+    setQues(e.target.value);
+  });
+
   return (
     <div
       className={cls(
-        "flex flex-col justify-center items-center overflow-x-hidden overflow-y-auto",
+        "flex pt-8 flex-col justify-center items-center",
         className
       )}
     >
-      <textarea
-        value={question}
+      <Textarea
+        disabled={cannotChat(chatStatus)}
         onKeyDownCapture={(event) => {
           if (event.key === "Enter") {
             event.preventDefault();
@@ -81,8 +87,12 @@ const QuestionBox = ({ className }: { className?: string }) => {
             chat(id);
           }
         }}
-        onChange={(e) => setQues(e.target.value)}
-        className="outline-none text-[#334155] h-full w-full min-h-[1.3rem]"
+        color="primary"
+        // bordered
+        labelPlaceholder="tab question here"
+        fullWidth
+        onChange={textOnChange}
+        className="text-[#334155] h-full min-h-[1.3rem]"
       />
     </div>
   );

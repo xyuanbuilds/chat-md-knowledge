@@ -1,6 +1,12 @@
 import * as React from "react";
-import { Button } from "@/components/Buttons";
+// import { Button } from "@/components/Buttons";
+import { Button } from "@nextui-org/react";
 import cls from "clsx";
+import { useAtom } from "jotai";
+import { qaStore, selectedAaStore } from "@/stores/qa";
+import { chatKeywordsFetch } from "@/utils/chat/fetch";
+import { openaiStore } from "@/stores/openai";
+import HoverBadge from "@/components/HoverBadge";
 
 const DownloadIcon = () => (
   <svg
@@ -19,13 +25,84 @@ const DownloadIcon = () => (
   </svg>
 );
 
+const buttonPosCls = "absolute left-0 right-0 mx-auto bottom-6";
+
+const buttonBaseCls =
+  "text-ellipsis overflow-hidden max-w-fit whitespace-nowrap inline-block";
+
 const SideBar = ({ className }: { className?: string }) => {
+  const [keysWordsMap, setKeyWords] = React.useState<Record<number, string[]>>(
+    {}
+  );
+  const [selected] = useAtom(selectedAaStore);
+  const [{ qa }] = useAtom(qaStore);
+  const [{ apiKey }] = useAtom(openaiStore);
+  const curQA = qa.find((i) => i.id === selected);
+
+  const curContent =
+    curQA?.chunks?.reduce((res, i) => {
+      const content = i.choices[0].delta.content;
+
+      if (!content) return res;
+
+      return `${res}${content}`;
+    }, "") ?? "";
+
   return (
-    <div className={cls("w-1/5 h=full relative", className)}>
-      side bar
+    <div className={cls("w-1/5 h=full p-4 relative", className)}>
+      <div>{curQA?.id}</div>
+      <div className="inline-flex gap-1 my-2 flex-wrap">
+        {selected &&
+          keysWordsMap[selected]?.map((i) => (
+            <HoverBadge
+              key={i}
+              onClose={(tag) => {
+                setKeyWords((prev) => {
+                  return {
+                    ...prev,
+                    [selected]: prev[selected].filter((i) => i !== tag),
+                  };
+                });
+              }}
+            >
+              {i}
+            </HoverBadge>
+          ))}
+      </div>
+      <Button
+        size="xs"
+        disabled={!selected}
+        onClick={() =>
+          selected &&
+          chatKeywordsFetch(
+            `extract less than ten keywords from this content, return a string separate keywords with \`,\`:
+            ${curContent}`,
+            apiKey,
+            {
+              onDone: (res) => {
+                console.log(res.choices[0].message.content);
+                setKeyWords((prev) => ({
+                  ...prev,
+                  [selected]: res.choices[0].message.content
+                    .split(",")
+                    .map((i) => i.trim()),
+                }));
+              },
+            }
+          )
+        }
+      >
+        get key words
+      </Button>
       {/* <div className="absolute bottom-4 left-[calc(50%-25%);] w-1/2 h-0 pb-[30.9%]"> */}
-      <Button className="absolute left-1/2 -translate-x-1/2 bottom-6 bg-blue-100 hover:bg-blue-200">
-        <DownloadIcon />
+      <Button
+        color="gradient"
+        auto
+        shadow
+        icon={<DownloadIcon />}
+        style={{ position: "absolute" }}
+        className={`${buttonPosCls} ${buttonBaseCls}`}
+      >
         Download
       </Button>
       {/* </div> */}

@@ -2,6 +2,7 @@ import Image from "next/image";
 import { Inter } from "next/font/google";
 import ActivityBar from "@/blocks/ActivityBar";
 import SideBar from "@/blocks/SideBar";
+import { Container } from "@nextui-org/react";
 import QuestionBox from "@/blocks/QuestionBox";
 import QACollapse from "@/blocks/QACollapse";
 import { useAtom } from "jotai";
@@ -16,19 +17,21 @@ export default function Home() {
   // console.log("home", apiKey, props);
   return (
     <div
-      className={`relative container h-screen border border-solid dark:border-white rounded ${inter.className}`}
+      // fluid
+      // gap={0}
+      className={`relative h-screen border border-solid dark:text-white dark:border-white dark:bg-black rounded ${inter.className}`}
     >
       <ActivityBar
         className={`absolute w-12 border-r dark:border-white border-solid`}
       />
       <main
-        className={`${flexDefault} overflow-hidden h-full ml-12 w-[calc(100%-2.5rem)] xl:w-[calc(100%-2.5rem)] md:w-[calc(100%-2rem)]`}
+        className={`${flexDefault} overflow-hidden h-full ml-12 w-[calc(100%-3rem)]`}
       >
         <div className="p-4 flex flex-col flex-1">
-          <div className="flex-1 overflow-x-hidden overflow-y-auto">
-            <QACollapse />
-          </div>
-          <QuestionBox className="border bg-gray-300 dark:bg-white dark:border-white rounded mt-4 min-h-[1rem] max-h-[30%] flex-initial" />
+          <QACollapse />
+          <QuestionBox
+          // className="border bg-gray-300 dark:bg-white dark:border-white rounded mt-4 min-h-[1rem] max-h-[30%] flex-initial"
+          />
         </div>
         <SideBar className="border-l dark:border-white" />
       </main>
