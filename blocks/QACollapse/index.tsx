@@ -11,8 +11,10 @@ import { useSize } from "react-use";
 import { useSpring, animated } from "@react-spring/web";
 import { CHAT_STATUS, chatStatusStore, isChatting } from "@/stores/status";
 import { Loading } from "@nextui-org/react";
+import { useTheme } from "@/stores/ui";
 import clsx from "clsx";
 import styles from "./index.module.css";
+import { useScrollInfo } from "@/hooks/useScroll";
 
 // interface QA {
 //   /** question */
@@ -68,6 +70,7 @@ const QACollapse = memo(() => {
   const [{ qa }, setAtom] = useAtom(qaStore);
   const [chatStatus] = useAtom(chatStatusStore);
   const [selectedId, setSelected] = useAtom(selectedAaStore);
+  const { isDark } = useTheme();
 
   const container = useRef<HTMLDivElement>(null);
   const content = useRef<HTMLDivElement>(null);
@@ -141,25 +144,33 @@ const QACollapse = memo(() => {
     });
   };
 
+  const [needMask, setNeedMask] = useState(false);
+  useScrollInfo(container.current, ({ needScroll, isScrollBottom }) => {
+    if (needScroll && !isScrollBottom) {
+      setNeedMask(true);
+    } else {
+      setNeedMask(false);
+    }
+  });
+
   const selectQA = (qaId: number) => {
     if (qaId) {
       setSelected(selectedId === qaId ? null : qaId);
     }
   };
 
-  // width: 100%;
-  // bottom: 0;
-  // left: 0;
-  // height: 2rem;
-  // position: absolute;
-  // background-image: linear-gradient(-180deg,rgba(255,255,255,0) 0%,#fff 100%);
-
   return (
     <div
       className={`${styles["scroll_container"]} relative flex-1 overflow-hidden`}
     >
       {/* TODO scroll bottom remove */}
-      <div className={styles.mask}></div>
+      {needMask && (
+        <div
+          className={clsx(styles.mask, {
+            [styles.maskDark]: isDark,
+          })}
+        />
+      )}
       <div ref={container} className="h-full overflow-x-hidden overflow-y-auto">
         <div ref={content} className="flex flex-col items-start gap-1">
           {qa.map((panel, index) => {

@@ -53,6 +53,59 @@ body {
   border-color: var(--base-border-color);
 }
 
+[data-color-mode="light"] ul,
+[data-color-mode="light"] ol {
+  margin: 0;
+}
+/** next-ui reset */
+[data-color-mode="dark"] ul,
+[data-color-mode="dark"] ol {
+  margin: 0;
+  color: unset;
+}
+[data-color-mode="dark"] *::selection {
+  background-color: #fff !important;
+  color: #000 !important;
+}
+[data-color-mode="light"] *::selection {
+  background-color: #000 !important;
+  color: #fff !important;
+}
+
+.wmde-markdown p,
+.wmde-markdown blockquote,
+.wmde-markdown ul,
+.wmde-markdown ol,
+.wmde-markdown dl,
+.wmde-markdown table,
+.wmde-markdown pre,
+.wmde-markdown details {
+  margin-top: 0;
+  margin-bottom: 16px;
+}
+
+.wmde-markdown p,
+.wmde-markdown blockquote,
+.wmde-markdown ul,
+.wmde-markdown ol,
+.wmde-markdown dl,
+.wmde-markdown table,
+.wmde-markdown pre,
+.wmde-markdown details {
+  margin-top: 0;
+  margin-bottom: 16px;
+}
+
+[data-color-mode="dark"] .wmde-markdown pre > code {
+  padding: 8px;
+  color: aquamarine;
+}
+[data-color-mode="light"] .wmde-markdown pre > code {
+  padding: 8px;
+  color: darkslateblue;
+}
+
+/** w-md reset */
 body .w-md-editor {
   background-color: transparent;
   /* color: transparent; */
